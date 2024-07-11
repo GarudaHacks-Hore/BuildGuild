@@ -2,30 +2,71 @@
 import React, { useState } from "react";
 import { HoveredLink, Menu, MenuItem, ProductItem } from "./ui/navbar-menu";
 import { cn } from "@/lib/utils";
+import { FaRegUserCircle, FaChevronDown } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 
 export function Navbar({ className }: { className?: string }) {
   const [active, setActive] = useState<string | null>(null);
+  const pathname = usePathname();
+
   return (
-    <div className={cn("bg-black inset-x-0 z-50", className)}>
+    <div
+      className={cn(
+        "flex justify-around items-center bg-white inset-x-0 z-50 border-b-2 h-20",
+        className
+      )}
+    >
       <Menu setActive={setActive}>
-        <MenuItem setActive={setActive} active={active} item="Play">
-          <div className="flex flex-col space-y-4 text-sm">
-            <HoveredLink href="/lobby">Lobby</HoveredLink>
-            <HoveredLink href="/all-contest">All Contest</HoveredLink>
-            <HoveredLink href="/write-contest">Write Contest</HoveredLink>
-          </div>
-        </MenuItem>
+        <HoveredLink className="font-bold text-xl" href="/">
+          ...Jam
+        </HoveredLink>
+      </Menu>
+      <Menu setActive={setActive}>
+        <HoveredLink
+          className={`hover:underline underline-offset-4 ${
+            pathname === "/" ? "font-bold underline" : ""
+          }`}
+          onMouseEnter={() => setActive(null)}
+          href="/"
+        >
+          Home
+        </HoveredLink>
+        <HoveredLink
+          className={`hover:underline underline-offset-4 ${
+            pathname === "/discover" ? "font-bold underline" : ""
+          }`}
+          onMouseEnter={() => setActive(null)}
+          href="/discover"
+        >
+          Discover
+        </HoveredLink>
+        <HoveredLink
+          className={`hover:underline underline-offset-4 ${
+            pathname === "/projects" ? "font-bold underline" : ""
+          }`}
+          onMouseEnter={() => setActive(null)}
+          href="/projects"
+        >
+          Projects
+        </HoveredLink>
         <MenuItem setActive={setActive} active={active} item="Community">
           <div className="flex flex-col space-y-4 text-sm">
-            <HoveredLink href="/leaderboards">Leaderboards</HoveredLink>
-            <HoveredLink href="/winners">Winners</HoveredLink>
-            <HoveredLink href="/discord">Discord</HoveredLink>
+            <HoveredLink href="/leaderboard">Leaderboard</HoveredLink>
+            <HoveredLink href="/hall-of-fame">Hall of Fame</HoveredLink>
           </div>
         </MenuItem>
-        <MenuItem setActive={setActive} active={active} item="Train">
+      </Menu>
+      <Menu className="flex items-center" setActive={setActive}>
+        <MenuItem
+          leftIcon={<FaRegUserCircle className="mr-1" size={20} />}
+          setActive={setActive}
+          active={active}
+          item="Ceavin"
+        >
           <div className="flex flex-col space-y-4 text-sm">
-            <HoveredLink href="/problem">Problem</HoveredLink>
-            <HoveredLink href="/problem-otd">Problem of the Day</HoveredLink>
+            <HoveredLink href="/profile">My Profile</HoveredLink>
+            <HoveredLink href="/account">Account</HoveredLink>
+            <HoveredLink href="/logout">Logout</HoveredLink>
           </div>
         </MenuItem>
       </Menu>

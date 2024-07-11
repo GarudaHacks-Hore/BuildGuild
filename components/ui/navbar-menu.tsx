@@ -3,6 +3,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const transition = {
   type: "spring",
@@ -15,25 +17,30 @@ const transition = {
 
 export const MenuItem = ({
   setActive,
+  leftIcon,
   active,
   item,
   children,
 }: {
-  setActive: (item: string) => void;
+  leftIcon?: React.ReactNode;
+  setActive: (item: string | null) => void;
   active: string | null;
   item: string;
   children?: React.ReactNode;
 }) => {
   return (
-    <div
-      onMouseEnter={() => setActive(item)}
-      className="relative hover:underline "
-    >
+    <div onMouseEnter={() => setActive(item)} className="relative">
       <motion.p
         transition={{ duration: 0.3 }}
-        className="cursor-pointer text-black hover:opacity-[0.9] dark:text-white"
+        className="cursor-pointer text-black hover:opacity-[0.9] dark:text-white flex items-center gap-1"
       >
+        {leftIcon}
         {item}
+        {active === item ? (
+          <FaChevronUp size={10} />
+        ) : (
+          <FaChevronDown size={10} />
+        )}
       </motion.p>
       {active !== null && (
         <motion.div
@@ -64,16 +71,21 @@ export const MenuItem = ({
 };
 
 export const Menu = ({
+  className,
   setActive,
   children,
 }: {
+  className?: string;
   setActive: (item: string | null) => void;
   children: React.ReactNode;
 }) => {
   return (
     <nav
       onMouseLeave={() => setActive(null)} // resets the state
-      className="relative border border-transparent dark:bg-black dark:border-white/[0.2] bg-white shadow-input flex justify-center space-x-4 px-8 py-6 "
+      className={cn(
+        "relative border border-transparent dark:bg-black dark:border-white/[0.2] bg-white shadow-input flex justify-center space-x-4 px-8",
+        className
+      )}
     >
       {children}
     </nav>
@@ -112,11 +124,14 @@ export const ProductItem = ({
   );
 };
 
-export const HoveredLink = ({ children, ...rest }: any) => {
+export const HoveredLink = ({ className, children, ...rest }: any) => {
   return (
     <Link
       {...rest}
-      className="text-neutral-700 dark:text-neutral-200 hover:text-black"
+      className={cn(
+        "text-neutral-700 dark:text-neutral-200 hover:text-black",
+        className
+      )}
     >
       {children}
     </Link>
