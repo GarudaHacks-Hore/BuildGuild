@@ -5,6 +5,7 @@ import * as React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Group } from "@/types/Group";
+import { cn } from "@/lib/utils";
 
 interface GroupListProps {
   groups: Group[];
@@ -17,13 +18,16 @@ export function GroupList(props: GroupListProps) {
     props.setSelectedGroup(group);
   };
   return (
-    <ScrollArea className="h-full rounded-md w-full">
+    <ScrollArea className="h-full w-full">
       <div className="">
         {props.groups.map((group) => (
-          <div key={group.id}>
+          <div className="" key={group.id}>
             <div
               onClick={() => handleClick(group)}
-              className="text-sm py-3 cursor-pointer"
+              className={cn(
+                "text-sm hover:px-2 hover:bg-gray-200 py-3 cursor-pointer transition-all rounded-md",
+                props.selectedGroup?.id === group.id && "bg-gray-200 px-2"
+              )}
             >
               <p className="font-bold">{group.name}</p>
               <p className="font-light text-xs">{group.topic}</p>

@@ -37,7 +37,12 @@ const BubbleChat = ({ message }: BubbleChatProps) => {
     }
   }, [message.sender]);
 
-  return (
+  const bubbleTheme =
+    message.role === "user" || isCurrentUser
+      ? "bg-black text-white"
+      : "text-black bg-gray-200";
+
+  return (message && !message.sender) || (message.sender && senderName) ? (
     <div
       className={cn(
         `flex ${
@@ -47,14 +52,18 @@ const BubbleChat = ({ message }: BubbleChatProps) => {
         } mb-2`
       )}
     >
-      <div className={`bg-black w-full text-white p-2 rounded-lg max-w-xs `}>
+      <div
+        className={`w-full ${bubbleTheme} p-2 rounded-lg w-fit min-w-[300px] max-w-xl`}
+      >
         <p className="text-xs font-bold">{senderName}</p>
-        <p>{message.chat}</p>
+        <p className="mb-2">{message.chat}</p>
         <p className="text-xs text-right">
           {dayjs(message.created_at).format("YYYY-MM-DD HH:mm:ss")}
         </p>
       </div>
     </div>
+  ) : (
+    <></>
   );
 };
 
