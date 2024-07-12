@@ -18,7 +18,7 @@ export function Navbar({ className }: { className?: string }) {
     >
       <Menu setActive={setActive}>
         <HoveredLink className="font-bold text-xl" href="/">
-          ...Jam
+          BuildGuild
         </HoveredLink>
       </Menu>
       <Menu setActive={setActive}>
@@ -49,13 +49,22 @@ export function Navbar({ className }: { className?: string }) {
         >
           Showcase
         </HoveredLink>
-        <MenuItem setActive={setActive} active={active} item="Community">
+        <HoveredLink
+          className={`hover:underline underline-offset-4 ${
+            pathname === "/communities" ? "font-bold underline" : ""
+          }`}
+          onMouseEnter={() => setActive(null)}
+          href="/communities"
+        >
+          Communities
+        </HoveredLink>
+        {/* <MenuItem setActive={setActive} active={active} item="Community">
           <div className="flex flex-col space-y-4 text-sm">
             <HoveredLink href="/forum">Forum</HoveredLink>
             <HoveredLink href="/leaderboard">Leaderboard</HoveredLink>
             <HoveredLink href="/hall-of-fame">Hall of Fame</HoveredLink>
           </div>
-        </MenuItem>
+        </MenuItem> */}
       </Menu>
       <Menu className="flex items-center" setActive={setActive}>
         <MenuItem

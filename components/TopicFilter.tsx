@@ -21,15 +21,15 @@ import { supabase } from "@/lib/supabase";
 import { Group } from "@/types/Group";
 import { Topic } from "@/types/Topic";
 
-interface ForumFilterProps {
+interface TopicFilterProps {
   setFilteredGroups: React.Dispatch<React.SetStateAction<any>>;
   groups: Group[];
 }
 
-export default function ForumFilter({
+export default function TopicFilter({
   setFilteredGroups,
   groups,
-}: ForumFilterProps) {
+}: TopicFilterProps) {
   const [open, setOpen] = React.useState(false);
   const [selectedTopics, setSelectedTopics] = React.useState<string[]>([]);
   const [topics, setTopics] = React.useState<Topic[]>([]);
@@ -90,7 +90,7 @@ export default function ForumFilter({
       <PopoverContent className="w-[200px] p-0">
         <Command>
           <CommandInput placeholder="Filter by topic..." />
-          <CommandEmpty>No forum found.</CommandEmpty>
+          <CommandEmpty>No topic found.</CommandEmpty>
           <CommandList>
             <CommandGroup>
               {topics.map((topic) => (

@@ -1,13 +1,13 @@
 "use client";
 
 import ChatRoom from "@/components/ChatRoom";
-import ForumFilter from "@/components/ForumFilter";
+import TopicFilter from "@/components/TopicFilter";
 import { GroupList } from "@/components/GroupList";
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Group } from "@/types/Group";
 
-export default function Forum() {
+export default function Communities() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
@@ -19,6 +19,7 @@ export default function Forum() {
         console.error("Error fetching groups: ", error);
       } else {
         setGroups(data);
+        setSelectedGroup(data[0]);
         setFilteredGroups(data);
       }
     }
@@ -32,8 +33,8 @@ export default function Forum() {
     >
       <div className="flex items-center w-full h-full">
         <div className="w-1/5 px-10 py-4 flex flex-col justify-start h-full gap-6">
-          <h1 className="text-2xl font-bold mb-2">Forums</h1>
-          <ForumFilter setFilteredGroups={setFilteredGroups} groups={groups} />
+          <h1 className="text-2xl font-bold mb-2">Communities</h1>
+          <TopicFilter setFilteredGroups={setFilteredGroups} groups={groups} />
           <GroupList
             groups={filteredGroups}
             selectedGroup={selectedGroup}
