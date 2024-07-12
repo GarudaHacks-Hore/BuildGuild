@@ -78,17 +78,23 @@ const ChatRoom = ({ group }: ChatRoomProps) => {
           <BubbleChat key={message.id} message={message} />
         ))}
       </div>
-      <div className="flex items-center">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSendMessage();
+        }}
+        className="flex items-center"
+      >
         <Input
           type="text"
           placeholder="Type your message..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
         />
-        <Button className="ml-2" onClick={handleSendMessage}>
+        <Button type="submit" className="ml-2">
           Send
         </Button>
-      </div>
+      </form>
     </>
   );
 };
