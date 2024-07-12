@@ -66,6 +66,7 @@ export default function Discover() {
   const [inputValue, setInputValue] = useState('');
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [user, setUser] = useState<User>();
+  const [userId, setUserId] = useState<number>();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -85,6 +86,8 @@ export default function Discover() {
         if (result_profile.error || result_profile.data.length == 0) {
           return;
         }
+
+        setUserId(result_profile.data[0].id);
 
         const result_prompt = await supabase
           .from('prompt_histories')
@@ -147,7 +150,7 @@ export default function Discover() {
     if (!selectedItemId) {
       const { data, error } = await supabase
         .from('prompt_histories')
-        .insert({ user: 2, message })
+        .insert({ user: userId, message })
         .select('*');
 
       if (error) {
