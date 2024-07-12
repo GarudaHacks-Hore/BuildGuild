@@ -31,7 +31,7 @@ export default function ForumFilter({
   groups,
 }: ForumFilterProps) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [selectedTopics, setSelectedTopics] = React.useState<string[]>([]);
   const [topics, setTopics] = React.useState<Topic[]>([]);
 
   React.useEffect(() => {
@@ -47,60 +47,64 @@ export default function ForumFilter({
   }, []);
 
   const handleFilterChange = (currentValue: string) => {
-    setValue(currentValue === value ? "" : currentValue);
-    setOpen(false);
-    if (currentValue === value) {
-      setFilteredGroups(groups);
-    } else if (currentValue == "All") {
+    let updatedTopics;
+    if (selectedTopics.includes(currentValue)) {
+      updatedTopics = selectedTopics.filter((topic) => topic !== currentValue);
+    } else {
+      updatedTopics = [...selectedTopics, currentValue];
+    }
+    setSelectedTopics(updatedTopics);
+
+    if (updatedTopics.length === 0) {
       setFilteredGroups(groups);
     } else {
-      const filtered = groups.filter((group) => group.topic === currentValue);
+      const filtered = groups.filter((group) =>
+        updatedTopics.includes(group.topic)
+      );
       setFilteredGroups(filtered);
     }
+
+    setOpen(false);
   };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          {value
-            ? value === "All"
+      <div className="flex items-center gap-2">
+        <p className="font-bold">Topic:</p>
+        <PopoverTrigger className="flex flex-grow" asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-[200px] justify-between"
+          >
+            {selectedTopics.length === 0
               ? "All"
-              : topics.find((topic) => topic.name === value)?.name
-            : "Filter forum..."}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
+              : selectedTopics
+                  .map((topic) => topics.find((t) => t.name === topic)?.name)
+                  .join(", ")}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+      </div>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Filter forum..." />
+          <CommandInput placeholder="Filter by topic..." />
           <CommandEmpty>No forum found.</CommandEmpty>
           <CommandList>
             <CommandGroup>
-              <CommandItem value={"All"} onSelect={handleFilterChange}>
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === "All" ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                All
-              </CommandItem>
               {topics.map((topic) => (
                 <CommandItem
                   key={topic.id}
                   value={topic.name}
-                  onSelect={handleFilterChange}
+                  onSelect={() => handleFilterChange(topic.name)}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === topic.name ? "opacity-100" : "opacity-0"
+                      selectedTopics.includes(topic.name)
+                        ? "opacity-100"
+                        : "opacity-0"
                     )}
                   />
                   {topic.name}

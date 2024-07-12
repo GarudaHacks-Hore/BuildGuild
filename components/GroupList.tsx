@@ -5,11 +5,6 @@ import * as React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Group } from "@/types/Group";
-import { group } from "console";
-
-const tags = Array.from({ length: 50 }).map(
-  (_, i, a) => `Group ${a.length - i}`
-);
 
 interface GroupListProps {
   groups: Group[];
@@ -30,7 +25,8 @@ export function GroupList(props: GroupListProps) {
               onClick={() => handleClick(group)}
               className="text-sm py-3 cursor-pointer"
             >
-              {group.name}
+              <p className="font-bold">{group.name}</p>
+              <p className="font-light text-xs">{group.topic}</p>
             </div>
             <Separator className="my-2" />
           </div>
