@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import dayjs from "dayjs";
+import { cn } from "@/lib/utils";
 
 interface BubbleChatProps {
   message: {
-    id: string;
+    id: number;
+    created_at: Date;
+    sender?: number;
+    role?: string;
     chat: string;
-    created_at: string;
-    sender: string;
   };
 }
 
 const BubbleChat = ({ message }: BubbleChatProps) => {
-  const [senderName, setSenderName] = useState("");
-  const userId = "current-user-id"; // Ganti dengan user ID yang sesuai
+  const [senderName, setSenderName] = useState<string>("");
+
+  const isCurrentUser = message.sender === 2;
 
   useEffect(() => {
-    const fetchSenderName = async () => {
+    async function fetchSenderName() {
       const { data, error } = await supabase
         .from("profiles")
         .select("name")
@@ -27,21 +31,28 @@ const BubbleChat = ({ message }: BubbleChatProps) => {
       } else {
         setSenderName(data.name);
       }
-    };
-    fetchSenderName();
+    }
+    if (message.sender) {
+      fetchSenderName();
+    }
   }, [message.sender]);
 
-  const isCurrentUser = message.sender === userId;
-  const bubbleStyle = isCurrentUser
-    ? "bg-black text-white self-end"
-    : "bg-gray-300 text-black self-start";
-
   return (
-    <div className={`p-2 rounded-lg mb-2 max-w-xs ${bubbleStyle}`}>
-      {!isCurrentUser && <div className="text-xs font-bold">{senderName}</div>}
-      <div className="text-sm">{message.chat}</div>
-      <div className="text-xs text-right text-gray-500">
-        {new Date(message.created_at).toLocaleString()}
+    <div
+      className={cn(
+        `flex ${
+          message.role === "user" || isCurrentUser
+            ? "justify-end"
+            : "justify-start"
+        } mb-2`
+      )}
+    >
+      <div className={`bg-black w-full text-white p-2 rounded-lg max-w-xs `}>
+        <p className="text-xs font-bold">{senderName}</p>
+        <p>{message.chat}</p>
+        <p className="text-xs text-right">
+          {dayjs(message.created_at).format("YYYY-MM-DD HH:mm:ss")}
+        </p>
       </div>
     </div>
   );

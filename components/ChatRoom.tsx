@@ -10,10 +10,10 @@ interface ChatRoomProps {
 }
 
 interface Message {
-  id: string;
+  id: number;
   chat: string;
-  created_at: string;
-  sender: string;
+  created_at: Date;
+  sender: number;
   groupId: string;
 }
 
@@ -32,6 +32,7 @@ const ChatRoom = ({ group }: ChatRoomProps) => {
         if (error) {
           console.error("Error fetching messages: ", error);
         } else {
+          console.log(data);
           setMessages(data);
         }
       };

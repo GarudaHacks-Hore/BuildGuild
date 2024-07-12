@@ -1,6 +1,6 @@
-interface Message {
+export interface Message {
   id: number;
   chat: string;
-  createdAt: Date;
+  created_at: Date;
   sender: number;
 }
