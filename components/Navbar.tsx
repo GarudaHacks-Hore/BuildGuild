@@ -11,6 +11,7 @@ export function Navbar({ className }: { className?: string }) {
   const [active, setActive] = useState<string | null>(null);
   const pathname = usePathname();
   const [user, setUser] = useState<User>();
+  const [isGetUser, setIsGetUser] = useState<boolean>(false);
 
   useEffect(() => {
     const getUser = async () => {
@@ -18,7 +19,7 @@ export function Navbar({ className }: { className?: string }) {
         data: { user },
       } = await supabase.auth.getUser();
       setUser(user as User);
-      console.log(user)
+      setIsGetUser(true);
     };
     getUser();
   }, []);
@@ -87,7 +88,7 @@ export function Navbar({ className }: { className?: string }) {
         className='flex items-center z-50'
         setActive={setActive}
       >
-        {user ? (
+        {user && isGetUser ? (
           <MenuItem
             leftIcon={
               <FaRegUserCircle
@@ -105,6 +106,8 @@ export function Navbar({ className }: { className?: string }) {
               <HoveredLink href='/sign-out'>Log Out</HoveredLink>
             </div>
           </MenuItem>
+        ) : !isGetUser ? (
+          <div></div>
         ) : (
           <>
             <HoveredLink href='/sign-in'>Login</HoveredLink>
