@@ -43,13 +43,16 @@ export default function Discover() {
       if (!error) {
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('bio')
+          .select('current_project_milestone, bio')
           .eq('email', data.user?.email)
           .single();
 
+        console.log(profile);
         if (profileError || !profile) {
           router.push('/sign-in');
         } else if (profile.bio == null) {
+          router.push('/profile');
+        } else if (profile.current_project_milestone == null) {
           router.push('/survey');
         }
       } else {
@@ -152,20 +155,13 @@ export default function Discover() {
 
           setIsLoading(true);
           // LLM
-          const response = await axios.post(
-            "http://192.168.177.120:8000/find",
-            {
-              prompt: message,
-              identifier: data[0].id,
-            }
-          );
+          const response = await axios.post('http://192.168.177.120:8000/find', {
+            prompt: message,
+            identifier: data[0].id,
+          });
 
           try {
-            setMessages([
-              ...messages,
-              ...newMsgData,
-              response.data.response[0],
-            ]);
+            setMessages([...messages, ...newMsgData, response.data.response[0]]);
           } catch (error) {
             console.error(error);
           }
