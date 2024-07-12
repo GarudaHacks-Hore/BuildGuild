@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import SurveyChat from './SurveyChat';
@@ -35,10 +35,10 @@ const SurveyRoom = () => {
   }]);
   const [newMessage, setNewMessage] = useState('');
   const [phase, setNewPhase] = useState<number>(1);
-  // const [name, setName] = useState<string>("");
-  // const [project, setProject] = useState<string>("");
-  // const [milestone, setMilestone] = useState<string>("");
-  // const [user, setUser] = useState<User>();
+  const [name, setName] = useState<string>("");
+  const [project, setProject] = useState<string>("");
+  const [milestone, setMilestone] = useState<string>("");
+  const [user, setUser] = useState<User>();
 
   const handleSendMessage = async () => {
     if (newMessage.trim() === '') return;
@@ -53,20 +53,25 @@ const SurveyRoom = () => {
     ]);
     setNewMessage('');
 
+    console.log(messages.filter(msg => msg.id != 1).map((message) => {message.role, message.content}));
+
     const response = await axios.post(
       "http://192.168.252.120:8000/registration",
       {
         prompt: newMessage,
         phase: phase,
+        conversation_history: messages
+          .filter((msg) => msg.id != 1)
+          .map((message) => ({ role: message.role, content: message.content })),
       }
     );
 
-    // if (phase === 1) {
-    //   setName(response.data.summary);
-    // } else if (phase === 3) {
-    //   setProject(response.data.history[2].content);
-    //   setMilestone(response.data.history[4].content);
-    // }
+    if (phase === 1) {
+      setName(response.data.summary);
+    } else if (phase === 3) {
+      setProject(response.data.history[2].content);
+      setMilestone(response.data.history[4].content);
+    }
 
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -80,30 +85,30 @@ const SurveyRoom = () => {
     setNewPhase(phase + 1);
   };
 
-  // useEffect(() => {
-  //   const getUser = async () => {
-  //     const {
-  //       data: { user },
-  //     } = await supabase.auth.getUser();
-  //     setUser(user as User);
-  //   };
-  //   getUser();
-  // }, []);
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user as User);
+    };
+    getUser();
+  }, []);
 
-  // useEffect(() => {
-  //   const submitProfile = async () => {
-  //     if (phase === 4) {
-  //       const { error } = await supabase
-  //         .from("profiles")
-  //         .insert({ name: name, project: project, milestone: milestone })
-  //         .eq("email", user?.email);
-  //       if (error) {
-  //         console.error("Error inserting profile: ", error);
-  //       }
-  //     }
-  //   };
-  //   submitProfile();
-  // }, [phase, setNewPhase]);
+  useEffect(() => {
+    const submitProfile = async () => {
+      if (phase === 4) {
+        const { error } = await supabase
+          .from("profiles")
+          .update({ name: name, current_project: project, current_project_milestone: milestone })
+          .eq("email", user?.email);
+        if (error) {
+          console.error("Error inserting profile: ", error);
+        }
+      }
+    };
+    submitProfile();
+  }, [phase, setNewPhase]);
 
   return (
     <>
