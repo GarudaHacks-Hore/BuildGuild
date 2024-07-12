@@ -89,10 +89,9 @@ export function Navbar({ className }: { className?: string }) {
             active={active}
             item={user.user_metadata.username}
           >
-            <div className="flex flex-col space-y-4 text-sm">
-              <HoveredLink href="/profile">My Profile</HoveredLink>
-              <HoveredLink href="/account">My Account</HoveredLink>
-              <HoveredLink href="/sign-out">Log Out</HoveredLink>
+            <div className='flex flex-col space-y-4 text-sm'>
+              <HoveredLink href='/profile'>My Profile</HoveredLink>
+              <HoveredLink href='/sign-out'>Log Out</HoveredLink>
             </div>
           </MenuItem>
         ) : !isGetUser ? (
