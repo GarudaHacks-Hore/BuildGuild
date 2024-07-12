@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import SurveyChat from './SurveyChat';
 import axios from 'axios';
-import { supabase } from "@/lib/supabase";
+import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/auth-js';
 
 interface Message {
@@ -20,10 +20,12 @@ interface SurveyRoomProps {
 }
 
 const SurveyRoom: React.FC<SurveyRoomProps> = ({ setPhase }) => {
-  const [messages, setMessages] = useState<Message[]>([{
-    id: 1,
-    role: 'assistant',
-    content: `
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      role: 'assistant',
+      content: `
 
     Hello friend! I'm excited to help you connect with people working on fascinating projects.
     Let's kick off your journey right here. Creating your profile will only take a minute, I promise.
@@ -32,16 +34,17 @@ const SurveyRoom: React.FC<SurveyRoomProps> = ({ setPhase }) => {
     
     What's your name and where are you based? Please include your city and country.
     
-    (For example, "Hi, I'm Farza from San Francisco, USA.")
+    (For example, "Hi, I'm Gerald from South Tangerang, Indonesia.")
     
     `,
-    created_at: new Date(),
-  }]);
+      created_at: new Date(),
+    },
+  ]);
   const [newMessage, setNewMessage] = useState('');
   const [phase, updatePhase] = useState<number>(1);
-  const [name, setName] = useState<string>("");
-  const [project, setProject] = useState<string>("");
-  const [milestone, setMilestone] = useState<string>("");
+  const [name, setName] = useState<string>('');
+  const [project, setProject] = useState<string>('');
+  const [milestone, setMilestone] = useState<string>('');
   const [user, setUser] = useState<User | null>(null);
 
   const handleSendMessage = async () => {
@@ -61,17 +64,15 @@ const SurveyRoom: React.FC<SurveyRoomProps> = ({ setPhase }) => {
         .map((message) => ({ role: message.role, content: message.content }))
     );
 
-    const response = await axios.post(
-      "http://192.168.177.120:8000/registration",
-      {
-        prompt: newMessage,
-        phase: phase,
-        conversation_history: [
-          ...messages,
-          userMessage,
-        ].filter((msg) => msg.id != 1).map((message) => ({ role: message.role, content: message.content })),
-      }
-    );
+    setIsLoading(true);
+    const response = await axios.post('http://172.25.118.194:8000/registration', {
+      prompt: newMessage,
+      phase: phase,
+      conversation_history: [...messages, userMessage]
+        .filter((msg) => msg.id != 1)
+        .map((message) => ({ role: message.role, content: message.content })),
+    });
+    setIsLoading(false);
 
     if (phase === 1) {
       setName(response.data.summary);
@@ -106,11 +107,11 @@ const SurveyRoom: React.FC<SurveyRoomProps> = ({ setPhase }) => {
     const submitProfile = async () => {
       if (phase === 4 && user) {
         const { error } = await supabase
-          .from("profiles")
+          .from('profiles')
           .update({ name: name, current_project: project, current_project_milestone: milestone })
-          .eq("email", user?.email);
+          .eq('email', user?.email);
         if (error) {
-          console.error("Error inserting profile: ", error);
+          console.error('Error inserting profile: ', error);
         }
       }
     };
@@ -127,6 +128,11 @@ const SurveyRoom: React.FC<SurveyRoomProps> = ({ setPhase }) => {
             message={message}
           />
         ))}
+        {isLoading && (
+          <div className='flex justify-start ml-4'>
+            <span className='animate-pulse inline-flex w-6 h-6 rounded-full bg-black opacity-75' />
+          </div>
+        )}
       </div>
       <form
         onSubmit={(e) => {
