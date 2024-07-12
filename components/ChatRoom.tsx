@@ -32,7 +32,6 @@ const ChatRoom = ({ group }: ChatRoomProps) => {
         if (error) {
           console.error("Error fetching messages: ", error);
         } else {
-          console.log(data);
           setMessages(data);
         }
       };
@@ -58,7 +57,6 @@ const ChatRoom = ({ group }: ChatRoomProps) => {
           }
         )
         .subscribe();
-      console.log(messages);
       return () => {
         supabase.removeChannel(channel);
       };
@@ -77,7 +75,6 @@ const ChatRoom = ({ group }: ChatRoomProps) => {
           groupId: group.id,
         })
         .select();
-      console.log(data);
       if (error) {
         console.error("Error sending message: ", error);
       } else {
