@@ -66,7 +66,7 @@ export default function SignUp() {
           title: "Sign up success!",
           variant: "default",
         });
-        router.push("/");
+        router.push("/survey");
       }
     } else {
       toast({
