@@ -2,10 +2,55 @@ import React from "react";
 import BubbleChat from "./BubbleChat";
 import { Message } from "@/types/Message";
 import { InfiniteMovingButtons } from "./ui/infinite-moving-buttons";
+import { supabase } from "@/lib/supabase";
+import axios from "axios";
 
-const PromptRoom = ({ messages }: { messages: Message[] }) => {
-  const handleSendMessage = (message: string) => {
-    console.log(message);
+const PromptRoom = ({
+  selectedTab,
+  messages,
+  setMessages,
+  setSelectedItemId,
+}: {
+  selectedTab: string | null;
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<any>>;
+  setSelectedItemId: (id: string) => void;
+}) => {
+  const handleSendMessage = async (message: string) => {
+    const realMessage = "Find me " + message.toLowerCase();
+    const { data, error } = await supabase
+      .from("prompt_histories")
+      .insert({ user: 2, message: realMessage })
+      .select("*");
+
+    if (error) {
+      console.error("Error insert prompt histories: ", error);
+      return;
+    } else {
+      const { data: newMsgData, error: newMsgError } = await supabase
+        .from("prompts")
+        .insert({ chat: realMessage, roomId: data[0].id, role: "user" })
+        .select("*");
+
+      if (newMsgError) {
+        console.error("Error insert prompt histories: ", newMsgError);
+        return;
+      } else {
+        setSelectedItemId(data[0].id);
+        setMessages(newMsgData ? newMsgData : []);
+        const response = await axios.post("http://192.168.252.120:8000/find", {
+          prompt: realMessage,
+          identifier: data[0].id,
+        });
+
+        // LLM
+        try {
+          setMessages([...messages, ...newMsgData, response.data.response[0]]);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
   };
 
   const prompts1 = [
@@ -53,7 +98,7 @@ const PromptRoom = ({ messages }: { messages: Message[] }) => {
 
   return (
     <>
-      {messages.length > 0 ? (
+      {selectedTab ? (
         messages.map((message) => (
           <BubbleChat key={message.id} message={message} />
         ))
