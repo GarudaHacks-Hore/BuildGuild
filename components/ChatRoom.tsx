@@ -27,8 +27,8 @@ const ChatRoom = ({ group }: ChatRoomProps) => {
         const { data, error } = await supabase
           .from('group_chats')
           .select('*')
-          .eq('groupId', group.id);
-
+          .eq('groupId', group.id)
+          .order('created_at');
         if (error) {
           console.error('Error fetching messages: ', error);
         } else {
@@ -111,7 +111,7 @@ const ChatRoom = ({ group }: ChatRoomProps) => {
           e.preventDefault();
           handleSendMessage();
         }}
-        className="flex items-center"
+        className='flex items-center'
       >
         <Input
           type='text'
@@ -119,7 +119,10 @@ const ChatRoom = ({ group }: ChatRoomProps) => {
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
         />
-        <Button type="submit" className="ml-2">
+        <Button
+          type='submit'
+          className='ml-2'
+        >
           Send
         </Button>
       </form>

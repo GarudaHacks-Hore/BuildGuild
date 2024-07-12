@@ -7,9 +7,9 @@ import { ParallaxScroll } from "@/components/ui/parallax-scroll";
 import { projects } from "@/constants";
 import React, { useState } from "react";
 
-export default function Discover() {
+export default function Showcase() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const [selectedWeek, setSelectedWeek] = useState<number | null>(1);
 
   const filteredProjects = projects.filter((project) => {
     const matchesSearch =
