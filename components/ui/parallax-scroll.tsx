@@ -1,4 +1,5 @@
 "use client";
+
 import { useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
@@ -10,6 +11,7 @@ interface Project {
   title: string;
   description: string;
   image: string;
+  week: number; 
 }
 
 export const ParallaxScroll = ({
