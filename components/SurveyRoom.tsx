@@ -15,7 +15,11 @@ interface Message {
   created_at: Date;
 }
 
-const SurveyRoom = () => {
+interface SurveyRoomProps {
+  setPhase: (phase: number) => void;
+}
+
+const SurveyRoom: React.FC<SurveyRoomProps> = ({ setPhase }) => {
   const [messages, setMessages] = useState<Message[]>([{
     id: 1,
     role: 'assistant',
@@ -34,35 +38,38 @@ const SurveyRoom = () => {
     created_at: new Date(),
   }]);
   const [newMessage, setNewMessage] = useState('');
-  const [phase, setNewPhase] = useState<number>(1);
+  const [phase, updatePhase] = useState<number>(1);
   const [name, setName] = useState<string>("");
   const [project, setProject] = useState<string>("");
   const [milestone, setMilestone] = useState<string>("");
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User | null>(null);
 
   const handleSendMessage = async () => {
     if (newMessage.trim() === '') return;
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        id: prevMessages.length + 1,
-        role: (prevMessages.length % 2 === 0) ? 'assistant' : 'user',
-        content: newMessage,
-        created_at: new Date(),
-      },
-    ]);
+    const userMessage = {
+      id: messages.length + 1,
+      role: 'user',
+      content: newMessage,
+      created_at: new Date(),
+    };
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
     setNewMessage('');
 
-    console.log(messages.filter(msg => msg.id != 1).map((message) => {message.role, message.content}));
+    console.log(
+      messages
+        .filter((msg) => msg.id != 1)
+        .map((message) => ({ role: message.role, content: message.content }))
+    );
 
     const response = await axios.post(
-      "http://192.168.252.120:8000/registration",
+      "http://192.168.177.120:8000/registration",
       {
         prompt: newMessage,
         phase: phase,
-        conversation_history: messages
-          .filter((msg) => msg.id != 1)
-          .map((message) => ({ role: message.role, content: message.content })),
+        conversation_history: [
+          ...messages,
+          userMessage,
+        ].filter((msg) => msg.id != 1).map((message) => ({ role: message.role, content: message.content })),
       }
     );
 
@@ -73,16 +80,16 @@ const SurveyRoom = () => {
       setMilestone(response.data.history[4].content);
     }
 
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        id: prevMessages.length + 1,
-        role: 'assistant',
-        content: response.data.answer,
-        created_at: new Date(),
-      },
-    ]);
-    setNewPhase(phase + 1);
+    const assistantMessage = {
+      id: messages.length + 2,
+      role: 'assistant',
+      content: response.data.answer,
+      created_at: new Date(),
+    };
+
+    setMessages((prevMessages) => [...prevMessages, assistantMessage]);
+    updatePhase(phase + 1);
+    setPhase(phase + 1);
   };
 
   useEffect(() => {
@@ -90,14 +97,14 @@ const SurveyRoom = () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      setUser(user as User);
+      setUser(user);
     };
     getUser();
   }, []);
 
   useEffect(() => {
     const submitProfile = async () => {
-      if (phase === 4) {
+      if (phase === 4 && user) {
         const { error } = await supabase
           .from("profiles")
           .update({ name: name, current_project: project, current_project_milestone: milestone })
@@ -108,7 +115,7 @@ const SurveyRoom = () => {
       }
     };
     submitProfile();
-  }, [phase, setNewPhase]);
+  }, [phase, user, name, project, milestone]);
 
   return (
     <>
@@ -142,7 +149,6 @@ const SurveyRoom = () => {
         </Button>
       </form>
     </>
-    // <></>
   );
 };
 
