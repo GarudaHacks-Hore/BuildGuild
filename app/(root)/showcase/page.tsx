@@ -11,8 +11,9 @@ export default function Discover() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
 
-  const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filteredProjects = projects.filter((project) => {
+    const matchesSearch =
+      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.owner.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -29,16 +30,21 @@ export default function Discover() {
       <div className="flex items-center w-full h-full">
         <div className="w-1/5 px-10 py-4 flex flex-col justify-start h-full gap-6">
           <h1 className="text-2xl font-bold mb-2">Project Showcase</h1>
-          <div className="flex flex-col gap-2 ml-10">
-            {[1, 2, 3, 4].map(week => (
-              <p
-                key={week}
-                className={`cursor-pointer ${selectedWeek === week ? 'text-blue-500' : ''}`}
-                onClick={() => setSelectedWeek(week)}
-              >
-                Week {week}
-              </p>
-            ))}
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xs font-light">Weeks</h2>
+            <div className="flex flex-col gap-2">
+              {[1, 2, 3, 4].map((week) => (
+                <button
+                  key={week}
+                  className={`text-left hover:px-2 hover:bg-gray-200 transition-all rounded-md cursor-pointer ${
+                    selectedWeek === week ? "bg-gray-200 px-2" : ""
+                  }`}
+                  onClick={() => setSelectedWeek(week)}
+                >
+                  Week {week}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
         <div className="bg-white flex flex-col shadow-lg gap-2 rounded-l-3xl p-6 w-4/5 h-full">
