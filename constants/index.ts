@@ -67,7 +67,7 @@ export const projects = [
     owner: "Grace Hill",
     title: "Water Purification",
     description: "Innovating water purification systems for rural areas.",
-    image: "https://images.unsplash.com/photo-1628239532623-c035054bff4e?q=80&w=2496&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "https://images.unsplash.com/photo-1616996690916-a4d9af24295d?q=80&w=2874&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     owner: "Henry Adams",

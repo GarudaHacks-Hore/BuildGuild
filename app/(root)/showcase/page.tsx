@@ -2,7 +2,6 @@ import ProjectsFilter from "@/components/ProjectsFilter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ParallaxScroll } from "@/components/ui/parallax-scroll";
-import { images } from "@/constants";
 import { projects } from "@/constants";
 import React from "react";
 
@@ -30,7 +29,7 @@ export default function Discover() {
               <Button>Search</Button>
             </div>
           </div>
-          <div className="">
+          <div>
             <ParallaxScroll projects={projects} />
           </div>
         </div>
