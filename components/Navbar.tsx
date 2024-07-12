@@ -66,7 +66,7 @@ export function Navbar({ className }: { className?: string }) {
           </div>
         </MenuItem> */}
       </Menu>
-      <Menu className="flex items-center" setActive={setActive}>
+      <Menu className="flex items-center z-50" setActive={setActive}>
         <MenuItem
           leftIcon={<FaRegUserCircle className="mr-1" size={20} />}
           setActive={setActive}
