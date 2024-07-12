@@ -49,11 +49,27 @@ export default function SignUp() {
     });
 
     if (!error) {
-      toast({
-        title: 'Sign up success!',
-        variant: 'default',
-      });
-      router.push('/');
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([{ email: data.email }]);
+
+      console.log(data.email);
+  
+      if (profileError) {
+        console.log(profileError);
+        await supabase.auth.admin.deleteUser(data.email);
+        toast({
+          title: 'Profile creation failed!',
+          variant: 'destructive',
+        });
+        router.push('/sign-up');
+      } else {
+        toast({
+          title: 'Sign up success!',
+          variant: 'default',
+        });
+        router.push('/');
+      }
     } else {
       toast({
         title: 'Sign up failed!',
