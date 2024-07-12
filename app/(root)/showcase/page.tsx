@@ -32,11 +32,11 @@ export default function Discover() {
           <h1 className="text-2xl font-bold mb-2">Project Showcase</h1>
           <div className="flex flex-col gap-2">
             <h2 className="text-xs font-light">Weeks</h2>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               {[1, 2, 3, 4].map((week) => (
                 <button
                   key={week}
-                  className={`text-left hover:px-2 hover:bg-gray-200 transition-all rounded-md cursor-pointer ${
+                  className={`text-left hover:px-2 py-1 hover:bg-gray-200 transition-all rounded-md cursor-pointer ${
                     selectedWeek === week ? "bg-gray-200 px-2" : ""
                   }`}
                   onClick={() => setSelectedWeek(week)}

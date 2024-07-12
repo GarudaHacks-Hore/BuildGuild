@@ -3,7 +3,13 @@ import BubbleChat from "./BubbleChat";
 import { Message } from "@/types/Message";
 import { InfiniteMovingButtons } from "./ui/infinite-moving-buttons";
 
-const PromptRoom = ({ messages }: { messages: Message[] }) => {
+const PromptRoom = ({
+  selectedTab,
+  messages,
+}: {
+  selectedTab: string | null;
+  messages: Message[];
+}) => {
   const handleSendMessage = (message: string) => {
     console.log(message);
   };
@@ -53,7 +59,7 @@ const PromptRoom = ({ messages }: { messages: Message[] }) => {
 
   return (
     <>
-      {messages.length > 0 ? (
+      {selectedTab ? (
         messages.map((message) => (
           <BubbleChat key={message.id} message={message} />
         ))

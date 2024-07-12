@@ -8,6 +8,53 @@ import dayjs from "dayjs";
 import PromptRoom from "@/components/PromptRoom";
 import { PromptHistory } from "@/types/PromptHistory";
 import { Message } from "@/types/Message";
+import { FaRegTrashAlt } from "react-icons/fa";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+
+const DeleteDialog = ({ className, id }: { className: string; id: string }) => {
+  const handleDelete = async (historyId: string) => {
+    const { data, error } = await supabase
+      .from("prompt_histories")
+      .delete()
+      .eq("id", historyId);
+
+    if (error) {
+      console.error("Error fetching prompt histories: ", error);
+      return;
+    }
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger className={className}>
+        <FaRegTrashAlt />
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Are you absolutely sure?</DialogTitle>
+          <DialogDescription>
+            This action cannot be undone. This will permanently delete your
+            account and remove your data from our servers.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button type="submit" onClick={() => handleDelete(id)}>
+            Delete
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 export default function Discover() {
   const [todayPrompts, setTodayPrompts] = useState<PromptHistory[]>([]);
@@ -15,6 +62,7 @@ export default function Discover() {
   const [previousPrompts, setPreviousPrompts] = useState<PromptHistory[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPromptHistories = async () => {
@@ -47,15 +95,22 @@ export default function Discover() {
         }
       });
 
+      // Sort each array by created_at in descending order
+      today.sort((a, b) => dayjs(b.created_at).diff(dayjs(a.created_at)));
+      yesterday.sort((a, b) => dayjs(b.created_at).diff(dayjs(a.created_at)));
+      previous.sort((a, b) => dayjs(b.created_at).diff(dayjs(a.created_at)));
+
       setTodayPrompts(today);
       setYesterdayPrompts(yesterday);
       setPreviousPrompts(previous);
     };
 
     fetchPromptHistories();
-  }, []);
+  }, [messages]);
 
   const handleClick = async (id: string) => {
+    setSelectedItemId(id);
+
     const { data, error } = await supabase
       .from("prompts")
       .select("*")
@@ -69,8 +124,43 @@ export default function Discover() {
     }
   };
 
-  const handleSendMessage = (message: string) => {
-    console.log(message);
+  const handleSendMessage = async (message: string) => {
+    setInputValue("");
+    if (!selectedItemId) {
+      const { data, error } = await supabase
+        .from("prompt_histories")
+        .insert({ user: 2, message })
+        .select("*");
+
+      if (error) {
+        console.error("Error insert prompt histories: ", error);
+        return;
+      } else {
+        const { data: newMsgData, error: newMsgError } = await supabase
+          .from("prompts")
+          .insert({ chat: message, roomId: data[0].id, role: "user" })
+          .select("*");
+        if (newMsgError) {
+          console.error("Error insert prompt histories: ", newMsgError);
+          return;
+        } else {
+          setSelectedItemId(data[0].id);
+          setMessages(newMsgData ? newMsgData : []);
+        }
+      }
+    } else {
+      const { data, error } = await supabase
+        .from("prompts")
+        .insert({ chat: message, roomId: messages[0].roomId, role: "user" })
+        .select("*");
+      console.log(messages);
+      if (error) {
+        console.error("Error insert prompt histories: ", error);
+        return;
+      } else {
+        setMessages([...messages, data[0]]);
+      }
+    }
   };
 
   return (
@@ -81,19 +171,42 @@ export default function Discover() {
       <div className="flex items-center w-full h-full">
         <div className="w-1/5 px-10 py-4 flex flex-col justify-start h-full gap-6">
           <h1 className="text-2xl font-bold mb-2">Discover People</h1>
-          <Button onClick={() => setMessages([])}>New chat</Button>
+          <Button
+            onClick={() => {
+              setSelectedItemId(null);
+              setMessages([]);
+            }}
+          >
+            New chat
+          </Button>
           {todayPrompts.length > 0 && (
             <div className="flex flex-col gap-2">
               <h2 className="text-xs font-light">Today</h2>
-              <div>
+              <div className="flex flex-col gap-1">
                 {todayPrompts.map((prompt) => (
-                  <p
-                    className="text-ellipsis truncate cursor-pointer hover:underline underline-offset-2"
+                  <div
                     key={prompt.id}
-                    onClick={() => handleClick(prompt.id)}
+                    className={`py-1 group hover:px-2 w-full flex items-center justify-between transition-all rounded-md cursor-pointer ${
+                      selectedItemId === prompt.id
+                        ? "bg-gray-200 px-2"
+                        : "hover:bg-gray-200"
+                    }`}
                   >
-                    {prompt.message}
-                  </p>
+                    <button
+                      className="w-full text-left py-1"
+                      onClick={() => handleClick(prompt.id)}
+                    >
+                      {prompt.message}
+                    </button>
+                    <DeleteDialog
+                      id={prompt.id}
+                      className={`hover:bg-gray-300 h-full aspect-square rounded-full flex justify-center items-center ${
+                        selectedItemId === prompt.id
+                          ? "visible"
+                          : "group-hover:visible invisible"
+                      }`}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -103,13 +216,29 @@ export default function Discover() {
               <h2 className="text-xs font-light">Yesterday</h2>
               <div>
                 {yesterdayPrompts.map((prompt) => (
-                  <p
-                    className="text-ellipsis truncate cursor-pointer hover:underline underline-offset-2"
+                  <div
                     key={prompt.id}
-                    onClick={() => handleClick(prompt.id)}
+                    className={`py-1 group hover:px-2 w-full flex items-center justify-between transition-all rounded-md cursor-pointer ${
+                      selectedItemId === prompt.id
+                        ? "bg-gray-200 px-2"
+                        : "hover:bg-gray-200"
+                    }`}
                   >
-                    {prompt.message}
-                  </p>
+                    <button
+                      className="w-full text-left py-1"
+                      onClick={() => handleClick(prompt.id)}
+                    >
+                      {prompt.message}
+                    </button>
+                    <DeleteDialog
+                      id={prompt.id}
+                      className={`hover:bg-gray-300 h-full aspect-square rounded-full flex justify-center items-center ${
+                        selectedItemId === prompt.id
+                          ? "visible"
+                          : "group-hover:visible invisible"
+                      }`}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -119,13 +248,29 @@ export default function Discover() {
               <h2 className="text-xs font-light">Previous 30 days</h2>
               <div>
                 {previousPrompts.map((prompt) => (
-                  <p
-                    className="text-ellipsis truncate cursor-pointer hover:underline underline-offset-2"
+                  <div
                     key={prompt.id}
-                    onClick={() => handleClick(prompt.id)}
+                    className={`py-1 group hover:px-2 w-full flex items-center justify-between transition-all rounded-md cursor-pointer ${
+                      selectedItemId === prompt.id
+                        ? "bg-gray-200 px-2"
+                        : "hover:bg-gray-200"
+                    }`}
                   >
-                    {prompt.message}
-                  </p>
+                    <button
+                      className="w-full text-left py-1"
+                      onClick={() => handleClick(prompt.id)}
+                    >
+                      {prompt.message}
+                    </button>
+                    <DeleteDialog
+                      id={prompt.id}
+                      className={`hover:bg-gray-300 h-full aspect-square rounded-full flex justify-center items-center ${
+                        selectedItemId === prompt.id
+                          ? "visible"
+                          : "group-hover:visible invisible"
+                      }`}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -133,7 +278,7 @@ export default function Discover() {
         </div>
         <div className="bg-white flex flex-col shadow-lg gap-2 rounded-l-3xl p-6 w-4/5 h-full">
           <div className="border rounded-lg p-4 flex-grow overflow-y-auto bg-gray-50">
-            <PromptRoom messages={messages} />
+            <PromptRoom selectedTab={selectedItemId} messages={messages} />
           </div>
           <form
             onSubmit={(e) => {
