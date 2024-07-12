@@ -4,6 +4,7 @@ import { useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import ProjectModal from "@/components/ProjectsModal";
+import ProjectCard from "@/components/ProjectsCard";
 import { cn } from "@/lib/utils";
 
 interface Project {
@@ -11,7 +12,8 @@ interface Project {
   title: string;
   description: string;
   image: string;
-  week: number; 
+  week: number;
+  tags?: string[];
 }
 
 export const ParallaxScroll = ({
@@ -65,60 +67,28 @@ export const ParallaxScroll = ({
                 onClick={() => openModal(project)}
                 className="cursor-pointer"
               >
-                <div className="p-4 bg-white rounded-lg shadow-md">
-                  <img
-                    src={project.image}
-                    className="h-40 w-full object-cover rounded-lg"
-                    alt={project.title}
-                  />
-                  <h3 className="mt-2 font-bold">{project.title}</h3>
-                  <p className="text-sm text-gray-500">{project.owner}</p>
-                </div>
+                <ProjectCard {...project} />
               </motion.div>
             ))}
           </div>
           <div className="grid gap-4">
             {secondPart.map((project, idx) => (
               <motion.div style={{ y: translateSecond }} key={"grid-2" + idx} onClick={() => openModal(project)} className="cursor-pointer">
-                <div className="p-4 bg-white rounded-lg shadow-md">
-                  <img
-                    src={project.image}
-                    className="h-40 w-full object-cover rounded-lg"
-                    alt={project.title}
-                  />
-                  <h3 className="mt-2 font-bold">{project.title}</h3>
-                  <p className="text-sm text-gray-500">{project.owner}</p>
-                </div>
+                <ProjectCard {...project} />
               </motion.div>
             ))}
           </div>
           <div className="grid gap-4">
             {thirdPart.map((project, idx) => (
               <motion.div style={{ y: translateThird }} key={"grid-3" + idx} onClick={() => openModal(project)} className="cursor-pointer">
-                <div className="p-4 bg-white rounded-lg shadow-md">
-                  <img
-                    src={project.image}
-                    className="h-40 w-full object-cover rounded-lg"
-                    alt={project.title}
-                  />
-                  <h3 className="mt-2 font-bold">{project.title}</h3>
-                  <p className="text-sm text-gray-500">{project.owner}</p>
-                </div>
+                <ProjectCard {...project} />
               </motion.div>
             ))}
           </div>
           <div className="grid gap-4">
             {fourthPart.map((project, idx) => (
               <motion.div style={{ y: translateFourth }} key={"grid-4" + idx} onClick={() => openModal(project)} className="cursor-pointer">
-                <div className="p-4 bg-white rounded-lg shadow-md">
-                  <img
-                    src={project.image}
-                    className="h-40 w-full object-cover rounded-lg"
-                    alt={project.title}
-                  />
-                  <h3 className="mt-2 font-bold">{project.title}</h3>
-                  <p className="text-sm text-gray-500">{project.owner}</p>
-                </div>
+                <ProjectCard {...project} />
               </motion.div>
             ))}
           </div>

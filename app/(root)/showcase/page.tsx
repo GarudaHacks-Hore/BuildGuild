@@ -10,6 +10,7 @@ import React, { useState } from "react";
 export default function Showcase() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedWeek, setSelectedWeek] = useState<number | null>(1);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const filteredProjects = projects.filter((project) => {
     const matchesSearch =
@@ -19,7 +20,9 @@ export default function Showcase() {
 
     const matchesWeek = selectedWeek === null || project.week === selectedWeek;
 
-    return matchesSearch && matchesWeek;
+    const matchesTags = selectedTags.length === 0 || (project.tags || []).some(tag => selectedTags.includes(tag));
+
+    return matchesSearch && matchesWeek && matchesTags;
   });
 
   return (
@@ -48,8 +51,8 @@ export default function Showcase() {
           </div>
         </div>
         <div className="bg-white flex flex-col shadow-lg gap-2 rounded-l-3xl p-6 w-4/5 h-full">
-          <div className="flex items-center gap-3">
-            <ProjectsFilter />
+          <div className="flex items-center gap-2">
+            <ProjectsFilter selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
             <div className="flex flex-grow items-center gap-2">
               <Input
                 type="text"

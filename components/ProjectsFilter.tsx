@@ -19,32 +19,52 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const frameworks = [
+const tags = [
   {
-    value: "next.js",
-    label: "Next.js",
+    value: "Technology",
+    label: "Technology",
   },
   {
-    value: "sveltekit",
-    label: "SvelteKit",
+    value: "Environment",
+    label: "Environment",
   },
   {
-    value: "nuxt.js",
-    label: "Nuxt.js",
+    value: "Finance",
+    label: "Finance",
   },
   {
-    value: "remix",
-    label: "Remix",
+    value: "Health",
+    label: "Health",
   },
   {
-    value: "astro",
-    label: "Astro",
+    value: "Transportation",
+    label: "Transportation",
   },
+  {
+    value: "Education",
+    label: "Education",
+  },
+  {
+    value: "Agriculture",
+    label: "Agriculture",
+  }
 ];
 
-export default function ProjectsFilter() {
+interface ProjectsFilterProps {
+  selectedTags: string[];
+  setSelectedTags: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+export default function ProjectsFilter({ selectedTags, setSelectedTags }: ProjectsFilterProps) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prevTags: string[]) =>
+      prevTags.includes(tag)
+        ? prevTags.filter((t) => t !== tag)
+        : [...prevTags, tag]
+    );
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -55,34 +75,36 @@ export default function ProjectsFilter() {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value
-            ? frameworks.find((framework) => framework.value === value)?.label
-            : "Filter projects..."}
+          <span className="truncate">
+            {selectedTags.length > 0
+              ? selectedTags.map((tag: string) => tags.find((t) => t.value === tag)?.label).join(", ")
+              : "Filter projects..."}
+          </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
           <CommandInput placeholder="Filter projects..." />
-          <CommandEmpty>No framework found.</CommandEmpty>
+          <CommandEmpty>No project found.</CommandEmpty>
           <CommandList>
             <CommandGroup>
-              {frameworks.map((framework) => (
+              {tags.map((tag) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                  key={tag.value}
+                  value={tag.value}
+                  onSelect={() => {
+                    toggleTag(tag.value);
                     setOpen(false);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === framework.value ? "opacity-100" : "opacity-0"
+                      selectedTags.includes(tag.value) ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {framework.label}
+                  {tag.label}
                 </CommandItem>
               ))}
             </CommandGroup>
