@@ -155,7 +155,7 @@ export default function Discover() {
 
           setIsLoading(true);
           // LLM
-          const response = await axios.post('http://192.168.177.120:8000/find', {
+          const response = await axios.post('http://172.25.117.40:8000/find', {
             prompt: message,
             identifier: data[0].id,
           });
@@ -181,7 +181,7 @@ export default function Discover() {
         setMessages([...messages, data[0]]);
 
         // LLM
-        const response = await axios.post('http://192.168.177.120:8000/find', {
+        const response = await axios.post('http://172.25.117.40:8000/find', {
           prompt: message,
           identifier: data[0].roomId,
         });

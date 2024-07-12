@@ -64,7 +64,7 @@ const PromptRoom = ({
           setSelectedItemId(data[0].id);
           setMessages(newMsgData ? newMsgData : []);
           const response = await axios.post(
-            "http://192.168.177.120:8000/find",
+            "http://172.25.117.40:8000/find",
             {
               prompt: realMessage,
               identifier: data[0].id,

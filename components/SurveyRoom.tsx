@@ -65,7 +65,7 @@ const SurveyRoom: React.FC<SurveyRoomProps> = ({ setPhase }) => {
     );
 
     setIsLoading(true);
-    const response = await axios.post('http://172.25.118.194:8000/registration', {
+    const response = await axios.post('http://172.25.117.40:8000/registration', {
       prompt: newMessage,
       phase: phase,
       conversation_history: [...messages, userMessage]
