@@ -18,7 +18,6 @@ const PromptRoom = ({
   setSelectedItemId: (id: string) => void;
 }) => {
   const [user, setUser] = useState<User>();
-  const [sender, setSender] = useState();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -41,7 +40,6 @@ const PromptRoom = ({
       if (error || !data) {
         return;
       }
-      setSender(data[0].id);
 
       const realMessage = "Find me " + message.toLowerCase();
 
@@ -134,16 +132,9 @@ const PromptRoom = ({
   return (
     <>
       {selectedTab ? (
-        messages.map(
-          (message) =>
-            sender && (
-              <BubbleChat
-                userLoggedInId={sender}
-                key={message.id}
-                message={message}
-              />
-            )
-        )
+        messages.map((message) => (
+          <BubbleChat key={message.id} message={message} />
+        ))
       ) : (
         <div className="flex flex-col items-center justify-center h-full gap-4">
           <h2 className="text-xl font-bold">

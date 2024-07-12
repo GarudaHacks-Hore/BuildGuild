@@ -11,7 +11,7 @@ interface BubbleChatProps {
     role?: string;
     chat: string;
   };
-  userLoggedInId: number;
+  userLoggedInId?: number;
 }
 
 const BubbleChat = ({ message, userLoggedInId }: BubbleChatProps) => {
