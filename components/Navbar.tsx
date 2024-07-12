@@ -47,10 +47,11 @@ export function Navbar({ className }: { className?: string }) {
           onMouseEnter={() => setActive(null)}
           href="/projects"
         >
-          Projects
+          Showcase
         </HoveredLink>
         <MenuItem setActive={setActive} active={active} item="Community">
           <div className="flex flex-col space-y-4 text-sm">
+            <HoveredLink href="/forum">Forum</HoveredLink>
             <HoveredLink href="/leaderboard">Leaderboard</HoveredLink>
             <HoveredLink href="/hall-of-fame">Hall of Fame</HoveredLink>
           </div>
