@@ -13,7 +13,6 @@ interface SurveyChatProps {
 }
 
 const SurveyChat = ({ message }: SurveyChatProps) => {
-
   const isCurrentUser = message.role === "user";
 
   const bubbleTheme =
@@ -21,7 +20,7 @@ const SurveyChat = ({ message }: SurveyChatProps) => {
       ? "bg-black text-white"
       : "text-black bg-gray-200";
 
-  return (message && message.role) ? (
+  return message && message.role ? (
     <div
       className={cn(
         `flex ${
@@ -34,11 +33,10 @@ const SurveyChat = ({ message }: SurveyChatProps) => {
       <div
         className={`w-full ${bubbleTheme} p-2 rounded-lg w-fit min-w-[300px] max-w-xl`}
       >
-        <p className="text-xs font-bold">{message.id % 2 === 0 ? "User" : "Assistant"}</p>
-        <p className="mb-2">{message.content}</p>
-        <p className="text-xs text-right">
-          {dayjs(message.created_at).format("YYYY-MM-DD HH:mm:ss")}
+        <p className="text-xs font-bold">
+          {message.id % 2 === 0 ? "User" : "Assistant"}
         </p>
+        <p className="mb-2">{message.content}</p>
       </div>
     </div>
   ) : (

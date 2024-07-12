@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,15 +24,39 @@ export default function Discover() {
   const [user, setUser] = useState<User>();
   const [userId, setUserId] = useState<number>();
 
+  const router = useRouter();
+
   useEffect(() => {
     const fetchUser = async () => {
-      const result_user = await supabase.auth.getUser();
-      if (result_user.data) {
-        setUser(result_user.data.user as User);
+      const { data, error } = await supabase.auth.getUser();
+      if (!error) {
+        setUser(data.user);
       }
     };
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (!error) {
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("bio")
+          .eq("email", data.user?.email)
+          .single();
+
+        if (profileError || !profile) {
+          router.push("/sign-in");
+        } else if (profile.bio.length === 0) {
+          router.push("/survey");
+        }
+      } else {
+        router.push("/sign-in");
+      }
+    };
+    fetchUser();
+  }, [user]);
 
   useEffect(() => {
     const fetchPromptHistories = async () => {
