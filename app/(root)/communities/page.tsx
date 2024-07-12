@@ -41,7 +41,7 @@ export default function Communities() {
 
         if (profileError || !profile) {
           router.push("/sign-in");
-        } else if (profile.bio.length === 0) {
+        } else if (profile.bio == null) {
           router.push("/survey");
         }
       } else {
