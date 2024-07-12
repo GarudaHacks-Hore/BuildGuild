@@ -155,16 +155,24 @@ export default function Discover() {
         .from("prompts")
         .insert({ chat: message, roomId: messages[0].roomId, role: "user" })
         .select("*");
-      await axios.post("http://192.168.252.120:8000/find", {
-        prompt: message,
-        identifier: messages[0].id,
-      });
 
       if (error) {
         console.error("Error insert prompt histories: ", error);
         return;
       } else {
         setMessages([...messages, data[0]]);
+
+        // LLM
+        const response = await axios.post("http://192.168.252.120:8000/find", {
+          prompt: message,
+          identifier: data[0].roomId,
+        });
+
+        try {
+          setMessages([...messages, ...data, response.data.response[0]]);
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
   };
