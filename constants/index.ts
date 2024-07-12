@@ -342,6 +342,7 @@ export const projects = [
     image:
       "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     week: 4,
+    tags: ["Agriculture", "Technology"],
   },
   {
     owner: "Henry Taylor",
@@ -350,6 +351,7 @@ export const projects = [
     image:
       "https://images.unsplash.com/photo-1566218246241-934ad8b38ea6?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     week: 1,
+    tags: ["Agriculture", "Environment"],
   },
   {
     owner: "Isla Walker",
@@ -358,6 +360,7 @@ export const projects = [
     image:
       "https://plus.unsplash.com/premium_photo-1682309652843-ed4eb60d473e?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     week: 2,
+    tags: ["Environment", "Technology"],
   },
   {
     owner: "Jackie White",
@@ -366,6 +369,7 @@ export const projects = [
     image:
       "https://plus.unsplash.com/premium_photo-1681458713811-ccc94bbdc127?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     week: 3,
+    tags: ["Technology"],
   },
   {
     owner: "Kendra Young",
@@ -374,6 +378,7 @@ export const projects = [
     image:
       "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     week: 4,
+    tags: ["Environment", "Technology"],
   },
   {
     owner: "Liam Brown",
@@ -383,6 +388,7 @@ export const projects = [
     image:
       "https://images.unsplash.com/photo-1470309864661-68328b2cd0a5?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     week: 1,
+    tags: ["Technology"],
   },
   {
     owner: "Mason Carter",
