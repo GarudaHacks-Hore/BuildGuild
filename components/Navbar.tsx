@@ -42,10 +42,10 @@ export function Navbar({ className }: { className?: string }) {
         </HoveredLink>
         <HoveredLink
           className={`hover:underline underline-offset-4 ${
-            pathname === "/projects" ? "font-bold underline" : ""
+            pathname === "/showcase" ? "font-bold underline" : ""
           }`}
           onMouseEnter={() => setActive(null)}
-          href="/projects"
+          href="/showcase"
         >
           Showcase
         </HoveredLink>

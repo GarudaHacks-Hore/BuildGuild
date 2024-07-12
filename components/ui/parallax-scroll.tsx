@@ -1,15 +1,23 @@
+// components/ui/parallax-scroll.tsx
 "use client";
 import { useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
+import ProjectsCard from "@/components/ProjectsCard";
 import { cn } from "@/lib/utils";
 
+interface Project {
+  owner: string;
+  title: string;
+  description: string;
+  image: string;
+}
+
 export const ParallaxScroll = ({
-  images,
+  projects,
   className,
 }: {
-  images: string[];
+  projects: Project[];
   className?: string;
 }) => {
   const gridRef = useRef<any>(null);
@@ -23,12 +31,12 @@ export const ParallaxScroll = ({
   const translateThird = useTransform(scrollYProgress, [0, 1], [0, -200]);
   const translateFourth = useTransform(scrollYProgress, [0, 1], [0, 200]);
 
-  const fourth = Math.ceil(images.length / 4);
+  const fourth = Math.ceil(projects.length / 4);
 
-  const firstPart = images.slice(0, fourth);
-  const secondPart = images.slice(fourth, 2 * fourth - 1);
-  const thirdPart = images.slice(2 * fourth - 1, 3 * fourth - 1);
-  const fourthPart = images.slice(3 * fourth - 1);
+  const firstPart = projects.slice(0, fourth);
+  const secondPart = projects.slice(fourth, 2 * fourth - 1);
+  const thirdPart = projects.slice(2 * fourth - 1, 3 * fourth - 1);
+  const fourthPart = projects.slice(3 * fourth - 1);
 
   return (
     <div
@@ -43,56 +51,52 @@ export const ParallaxScroll = ({
         ref={gridRef}
       >
         <div className="grid gap-4">
-          {firstPart.map((el, idx) => (
+          {firstPart.map((project, idx) => (
             <motion.div
               style={{ y: translateFirst }} // Apply the translateY motion value here
               key={"grid-1" + idx}
             >
-              <Image
-                src={el}
-                className="h-80 w-full object-cover object-left-top rounded-lg gap-10 !m-0 !p-0"
-                height="400"
-                width="400"
-                alt="thumbnail"
+              <ProjectsCard
+                owner={project.owner}
+                title={project.title}
+                description={project.description}
+                image={project.image}
               />
             </motion.div>
           ))}
         </div>
         <div className="grid gap-4">
-          {secondPart.map((el, idx) => (
+          {secondPart.map((project, idx) => (
             <motion.div style={{ y: translateSecond }} key={"grid-2" + idx}>
-              <Image
-                src={el}
-                className="h-80 w-full object-cover object-left-top rounded-lg gap-10 !m-0 !p-0"
-                height="400"
-                width="400"
-                alt="thumbnail"
+              <ProjectsCard
+                owner={project.owner}
+                title={project.title}
+                description={project.description}
+                image={project.image}
               />
             </motion.div>
           ))}
         </div>
         <div className="grid gap-4">
-          {thirdPart.map((el, idx) => (
+          {thirdPart.map((project, idx) => (
             <motion.div style={{ y: translateThird }} key={"grid-3" + idx}>
-              <Image
-                src={el}
-                className="h-80 w-full object-cover object-left-top rounded-lg gap-10 !m-0 !p-0"
-                height="400"
-                width="400"
-                alt="thumbnail"
+              <ProjectsCard
+                owner={project.owner}
+                title={project.title}
+                description={project.description}
+                image={project.image}
               />
             </motion.div>
           ))}
         </div>
         <div className="grid gap-4">
-          {fourthPart.map((el, idx) => (
+          {fourthPart.map((project, idx) => (
             <motion.div style={{ y: translateFourth }} key={"grid-4" + idx}>
-              <Image
-                src={el}
-                className="h-80 w-full object-cover object-left-top rounded-lg gap-10 !m-0 !p-0"
-                height="400"
-                width="400"
-                alt="thumbnail"
+              <ProjectsCard
+                owner={project.owner}
+                title={project.title}
+                description={project.description}
+                image={project.image}
               />
             </motion.div>
           ))}

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ParallaxScroll } from "@/components/ui/parallax-scroll";
 import { images } from "@/constants";
+import { projects } from "@/constants";
 import React from "react";
 
 export default function Discover() {
@@ -30,7 +31,7 @@ export default function Discover() {
             </div>
           </div>
           <div className="">
-            <ParallaxScroll images={images} />
+            <ParallaxScroll projects={projects} />
           </div>
         </div>
       </div>
