@@ -10,7 +10,6 @@ import { PromptHistory } from "@/types/PromptHistory";
 import { Message } from "@/types/Message";
 import { FaRegTrashAlt } from "react-icons/fa";
 import axios from "axios";
-import { User } from "@supabase/auth-js";
 
 import {
   Dialog,
