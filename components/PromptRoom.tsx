@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import BubbleChat from './BubbleChat';
-import { Message } from '@/types/Message';
-import { InfiniteMovingButtons } from './ui/infinite-moving-buttons';
-import { supabase } from '@/lib/supabase';
-import axios from 'axios';
-import { User } from '@supabase/auth-js';
+import React, { useEffect, useState } from "react";
+import BubbleChat from "./BubbleChat";
+import { Message } from "@/types/Message";
+import { InfiniteMovingButtons } from "./ui/infinite-moving-buttons";
+import { supabase } from "@/lib/supabase";
+import axios from "axios";
+import { User } from "@supabase/auth-js";
 
 const PromptRoom = ({
   selectedTab,
@@ -18,6 +18,7 @@ const PromptRoom = ({
   setSelectedItemId: (id: string) => void;
 }) => {
   const [user, setUser] = useState<User>();
+  const [sender, setSender] = useState();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -31,42 +32,54 @@ const PromptRoom = ({
 
   const handleSendMessage = async (message: string) => {
     if (user) {
-      let result_profile = await supabase.from('profiles').select('*').eq('email', user.email);
+      let data, error;
+      ({ data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("email", user.email));
 
-      if (result_profile.error || result_profile.data.length == 0) {
+      if (error || !data) {
         return;
       }
+      setSender(data[0].id);
 
-      const realMessage = 'Find me ' + message.toLowerCase();
+      const realMessage = "Find me " + message.toLowerCase();
 
-      const { data, error } = await supabase
-        .from('prompt_histories')
-        .insert({ user: result_profile.data[0].id, message: realMessage })
-        .select('*');
+      ({ data, error } = await supabase
+        .from("prompt_histories")
+        .insert({ user: data[0].id, message: realMessage })
+        .select("*"));
 
-      if (error) {
-        console.error('Error insert prompt histories: ', error);
+      if (error || !data) {
+        console.error("Error insert prompt histories: ", error);
         return;
       } else {
         const { data: newMsgData, error: newMsgError } = await supabase
-          .from('prompts')
-          .insert({ chat: realMessage, roomId: data[0].id, role: 'user' })
-          .select('*');
+          .from("prompts")
+          .insert({ chat: realMessage, roomId: data[0].id, role: "user" })
+          .select("*");
 
         if (newMsgError) {
-          console.error('Error insert prompt histories: ', newMsgError);
+          console.error("Error insert prompt histories: ", newMsgError);
           return;
         } else {
           setSelectedItemId(data[0].id);
           setMessages(newMsgData ? newMsgData : []);
-          const response = await axios.post('http://192.168.177.120:8000/find', {
-            prompt: realMessage,
-            identifier: data[0].id,
-          });
+          const response = await axios.post(
+            "http://192.168.177.120:8000/find",
+            {
+              prompt: realMessage,
+              identifier: data[0].id,
+            }
+          );
 
           // LLM
           try {
-            setMessages([...messages, ...newMsgData, response.data.response[0]]);
+            setMessages([
+              ...messages,
+              ...newMsgData,
+              response.data.response[0],
+            ]);
           } catch (error) {
             console.error(error);
           }
@@ -78,89 +91,95 @@ const PromptRoom = ({
   const prompts1 = [
     {
       id: 0,
-      text: 'Who can help me build a PC?',
+      text: "Who can help me build a PC?",
     },
     {
       id: 1,
-      text: 'Who plays Jazz music?',
+      text: "Who plays Jazz music?",
     },
     {
       id: 2,
-      text: 'Find me some social media expert',
+      text: "Find me some social media expert",
     },
     {
       id: 3,
-      text: 'Who likes hiking?',
+      text: "Who likes hiking?",
     },
     {
       id: 4,
-      text: 'Find me some blockchain developer',
+      text: "Find me some blockchain developer",
     },
     {
       id: 5,
-      text: 'Who likes travelling?',
+      text: "Who likes travelling?",
     },
     {
       id: 6,
-      text: 'Who is interested in pop music?',
+      text: "Who is interested in pop music?",
     },
     {
       id: 7,
-      text: 'Who can play piano for my wedding?',
+      text: "Who can play piano for my wedding?",
     },
     {
       id: 8,
-      text: 'Who likes bowling?',
+      text: "Who likes bowling?",
     },
     {
       id: 9,
-      text: 'What do you know about Ceavin?',
+      text: "What do you know about Ceavin?",
     },
   ];
 
   return (
     <>
       {selectedTab ? (
-        messages.map((message) => (
-          <BubbleChat
-            key={message.id}
-            message={message}
-          />
-        ))
+        messages.map(
+          (message) =>
+            sender && (
+              <BubbleChat
+                userLoggedInId={sender}
+                key={message.id}
+                message={message}
+              />
+            )
+        )
       ) : (
-        <div className='flex flex-col items-center justify-center h-full gap-4'>
-          <h2 className='text-xl font-bold'>What kind of person you want to find?</h2>
-          <div className='flex gap-2'>
+        <div className="flex flex-col items-center justify-center h-full gap-4">
+          <h2 className="text-xl font-bold">
+            What kind of person you want to find?
+          </h2>
+          <div className="flex gap-2">
             <button
-              className='hover:bg-gray-100 transition-all w-[200px] h-[100px] p-5 border-2'
+              className="hover:bg-gray-100 transition-all w-[200px] h-[100px] p-5 border-2"
               onClick={(e) => handleSendMessage(e.currentTarget.innerText)}
             >
               A tech savvy
             </button>
             <button
-              className='hover:bg-gray-100 transition-all w-[200px] h-[100px] p-5 border-2'
+              className="hover:bg-gray-100 transition-all w-[200px] h-[100px] p-5 border-2"
               onClick={(e) => handleSendMessage(e.currentTarget.innerText)}
             >
               Someone who loves making music
             </button>
             <button
-              className='hover:bg-gray-100 transition-all w-[200px] h-[100px] p-5 border-2'
+              className="hover:bg-gray-100 transition-all w-[200px] h-[100px] p-5 border-2"
               onClick={(e) => handleSendMessage(e.currentTarget.innerText)}
             >
               Someone who can do taekwondo
             </button>
             <button
-              className='hover:bg-gray-100 transition-all w-[200px] h-[100px] p-5 border-2'
+              className="hover:bg-gray-100 transition-all w-[200px] h-[100px] p-5 border-2"
               onClick={(e) => handleSendMessage(e.currentTarget.innerText)}
             >
               Foodist
             </button>
           </div>
-          <h3 className='p-0'>or you can try these</h3>
+          <h3 className="p-0">or you can try these</h3>
           <InfiniteMovingButtons
             items={prompts1}
-            direction='right'
-            speed='slow'
+            direction="right"
+            speed="slow"
           />
         </div>
       )}

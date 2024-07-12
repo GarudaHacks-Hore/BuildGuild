@@ -20,6 +20,23 @@ interface Message {
 const ChatRoom = ({ group }: ChatRoomProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [sender, setSender] = useState<number>();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (!error) {
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("email", data.user?.email)
+          .single();
+
+        if (!profileError) setSender(profile.id);
+      }
+    };
+    getUser();
+  }, []);
 
   useEffect(() => {
     if (group) {
@@ -71,7 +88,7 @@ const ChatRoom = ({ group }: ChatRoomProps) => {
         .from("group_chats")
         .insert({
           chat: newMessage,
-          sender: 2,
+          sender: sender,
           groupId: group.id,
         })
         .select();
@@ -96,9 +113,16 @@ const ChatRoom = ({ group }: ChatRoomProps) => {
     <>
       <h2 className="font-bold">{group.name}</h2>
       <div className="border rounded-lg p-4 flex-grow overflow-y-auto bg-gray-50">
-        {messages.map((message) => (
-          <BubbleChat key={message.id} message={message} />
-        ))}
+        {messages.map(
+          (message) =>
+            sender && (
+              <BubbleChat
+                userLoggedInId={sender}
+                key={message.id}
+                message={message}
+              />
+            )
+        )}
       </div>
       <form
         onSubmit={(e) => {

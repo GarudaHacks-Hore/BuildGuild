@@ -11,12 +11,13 @@ interface BubbleChatProps {
     role?: string;
     chat: string;
   };
+  userLoggedInId: number;
 }
 
-const BubbleChat = ({ message }: BubbleChatProps) => {
+const BubbleChat = ({ message, userLoggedInId }: BubbleChatProps) => {
   const [senderName, setSenderName] = useState<string>("");
 
-  const isCurrentUser = message.sender === 2;
+  const isCurrentUser = message.sender === userLoggedInId;
 
   useEffect(() => {
     async function fetchSenderName() {
