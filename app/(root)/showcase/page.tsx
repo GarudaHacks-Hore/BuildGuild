@@ -1,11 +1,21 @@
+"use client";
+
 import ProjectsFilter from "@/components/ProjectsFilter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ParallaxScroll } from "@/components/ui/parallax-scroll";
 import { projects } from "@/constants";
-import React from "react";
+import React, { useState } from "react";
 
 export default function Discover() {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredProjects = projects.filter(project =>
+    project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    project.owner.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <main
       style={{ height: "calc(100vh - 80px)" }}
@@ -25,12 +35,17 @@ export default function Discover() {
           <div className="flex items-center gap-3">
             <ProjectsFilter />
             <div className="flex flex-grow items-center gap-2">
-              <Input type="text" placeholder="Search project" />
-              <Button>Search</Button>
+              <Input
+                type="text"
+                placeholder="Search project"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <Button onClick={() => setSearchQuery("")}>Clear</Button>
             </div>
           </div>
           <div>
-            <ParallaxScroll projects={projects} />
+            <ParallaxScroll projects={filteredProjects} />
           </div>
         </div>
       </div>
