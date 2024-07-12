@@ -9,6 +9,7 @@ import PromptRoom from "@/components/PromptRoom";
 import { PromptHistory } from "@/types/PromptHistory";
 import { Message } from "@/types/Message";
 import { FaRegTrashAlt } from "react-icons/fa";
+import axios from "axios";
 
 import {
   Dialog,
@@ -140,12 +141,32 @@ export default function Discover() {
           .from("prompts")
           .insert({ chat: message, roomId: data[0].id, role: "user" })
           .select("*");
+
         if (newMsgError) {
           console.error("Error insert prompt histories: ", newMsgError);
           return;
         } else {
           setSelectedItemId(data[0].id);
           setMessages(newMsgData ? newMsgData : []);
+
+          // LLM
+          const response = await axios.post(
+            "http://192.168.252.120:8000/find",
+            {
+              prompt: message,
+              identifier: data[0].id,
+            }
+          );
+
+          try {
+            setMessages([
+              ...messages,
+              ...newMsgData,
+              response.data.response[0],
+            ]);
+          } catch (error) {
+            console.error(error);
+          }
         }
       }
     } else {
@@ -153,7 +174,11 @@ export default function Discover() {
         .from("prompts")
         .insert({ chat: message, roomId: messages[0].roomId, role: "user" })
         .select("*");
-      console.log(messages);
+      await axios.post("http://192.168.252.120:8000/find", {
+        prompt: message,
+        identifier: messages[0].id,
+      });
+
       if (error) {
         console.error("Error insert prompt histories: ", error);
         return;
@@ -193,7 +218,7 @@ export default function Discover() {
                     }`}
                   >
                     <button
-                      className="w-full text-left py-1"
+                      className="w-full text-left py-1 truncate overflow-ellipsis"
                       onClick={() => handleClick(prompt.id)}
                     >
                       {prompt.message}
@@ -225,7 +250,7 @@ export default function Discover() {
                     }`}
                   >
                     <button
-                      className="w-full text-left py-1"
+                      className="w-full text-left py-1 truncate overflow-ellipsis"
                       onClick={() => handleClick(prompt.id)}
                     >
                       {prompt.message}
@@ -257,7 +282,7 @@ export default function Discover() {
                     }`}
                   >
                     <button
-                      className="w-full text-left py-1"
+                      className="w-full text-left py-1 truncate overflow-ellipsis"
                       onClick={() => handleClick(prompt.id)}
                     >
                       {prompt.message}
@@ -278,7 +303,12 @@ export default function Discover() {
         </div>
         <div className="bg-white flex flex-col shadow-lg gap-2 rounded-l-3xl p-6 w-4/5 h-full">
           <div className="border rounded-lg p-4 flex-grow overflow-y-auto bg-gray-50">
-            <PromptRoom selectedTab={selectedItemId} messages={messages} />
+            <PromptRoom
+              setSelectedItemId={setSelectedItemId}
+              setMessages={setMessages}
+              selectedTab={selectedItemId}
+              messages={messages}
+            />
           </div>
           <form
             onSubmit={(e) => {
