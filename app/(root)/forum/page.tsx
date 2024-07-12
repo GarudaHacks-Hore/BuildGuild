@@ -3,14 +3,27 @@
 import ChatRoom from "@/components/ChatRoom";
 import ForumFilter from "@/components/ForumFilter";
 import { GroupList } from "@/components/GroupList";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { Group } from "@/types/Group";
 
 export default function Forum() {
-  const groups = [
-    { id: "1", name: "Anjay" },
-    { id: "2", name: "Anjrot" },
-  ];
-  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
+
+  useEffect(() => {
+    async function fetchGroups() {
+      const { data, error } = await supabase.from("groups").select("*");
+      if (error) {
+        console.error("Error fetching groups: ", error);
+      } else {
+        setGroups(data);
+        setFilteredGroups(data);
+      }
+    }
+    fetchGroups();
+  }, []);
 
   return (
     <main
@@ -20,9 +33,9 @@ export default function Forum() {
       <div className="flex items-center w-full h-full">
         <div className="w-1/5 px-10 py-4 flex flex-col justify-start h-full gap-6">
           <h1 className="text-2xl font-bold mb-2">Forums</h1>
-          <ForumFilter />
+          <ForumFilter setFilteredGroups={setFilteredGroups} groups={groups} />
           <GroupList
-            groups={groups}
+            groups={filteredGroups}
             selectedGroup={selectedGroup}
             setSelectedGroup={setSelectedGroup}
           />

@@ -25,16 +25,15 @@ export function GroupList(props: GroupListProps) {
     <ScrollArea className="h-full rounded-md w-full">
       <div className="">
         {props.groups.map((group) => (
-          <>
+          <div key={group.id}>
             <div
               onClick={() => handleClick(group)}
-              key={group.id}
               className="text-sm py-3 cursor-pointer"
             >
               {group.name}
             </div>
             <Separator className="my-2" />
-          </>
+          </div>
         ))}
       </div>
     </ScrollArea>
